@@ -1,10 +1,12 @@
-from math import sqrt, radians, degrees
+from math import sqrt
+
 
 def distance(x, y):
     a = (x[1] - x[0])**2
     b = (y[1] - y[0])**2
     c = sqrt(a+b)
     return c
+
 
 def convert(x):
 

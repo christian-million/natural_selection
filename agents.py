@@ -1,10 +1,11 @@
-from random import random, randint
+from random import randint
 from normal_dist import normal_int
 from math import radians, cos, sin, atan2, degrees, sqrt
 from csv import writer
-from utils import distance, convert
+from utils import convert
 
 EAT_DIST = 2
+
 
 class Pos:
     def __init__(self, x, y):
@@ -124,7 +125,7 @@ class Food:
         self.pos = Pos(randint(-10, 10), randint(-10, 10))
         self.size = 1
         self.eaten = False
-    
+
     def die(self):
         self.model.food.remove(self)
 
@@ -145,7 +146,7 @@ class Model:
     def step(self):
         for agent in self.agents:
             agent.step()
-    
+
 
 if __name__ == '__main__':
 
@@ -160,7 +161,6 @@ if __name__ == '__main__':
         my_model.step()
         for agent in my_model.agents:
             data.append([f"Agent {agent.id}", i, agent.pos.x, agent.pos.y])
-    
 
     with open("tst.csv", 'w', newline='') as f:
         r = writer(f)
