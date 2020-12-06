@@ -36,6 +36,7 @@ def overlap(pos1, r1, pos2, r2):
         return False
 
 
+# TODO Make Agent class inherit from 'Food'
 class Agent:
     '''
     '''

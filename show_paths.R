@@ -2,7 +2,7 @@ library(ggplot2)
 library(dplyr)
 
 
-data = read.csv('agents/tst.csv',
+data <- read.csv('natural_selection/tst.csv',
                 col.names = c('agent','time', 'x', 'y'),
                 stringsAsFactors = F)
 

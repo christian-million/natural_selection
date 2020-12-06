@@ -7,7 +7,7 @@ WEBHOOK_URL = keyring.get_password("NSBOT", "webhook")
 
 def send():
     content = f"N Agents: {var_n_agents.get()}\nN Food: {var_n_food.get()}\nN Days: {var_n_days.get()}\nN Steps: {var_n_steps.get()}"
-    data = {"username": "Christian Million",
+    data = {"username": "Webhook User",
             "content": content}
     requests.post(WEBHOOK_URL, data=data)
 
