@@ -13,50 +13,70 @@ API.
 If time allows, I’d love to be able to set parameters and execute the model with Discord commands, but I
 am nervous that building the headless simulator will take up most of my time.
 
-# Implementation
+# Parameter Descriptions
 
-- A tkinter application
-    - with text entry fields and drop down menus accompanied by some descriptive text that details how it might impact the simulation
-- An Agent class representing the creatures in the model
-    - Attributes like speed, size, sense, and alive
-    - Methods like move, eat, replicate, and die
-- A Model class that manages execution and data collection.
-    - Attributes like n_agents and n_food
-    - (Considering a Parameters class to pass to model. . . )
-    - Methods like get_data and run
-- A Food class for the creatures to eat.
-    - Maybe creatures should inherit from food class for when I implement eating other creatures?
-- Pushing to discord using a webhook
-    - Maybe a discord bot if time allows
+Currently the GUI allows the user to control the many parameters of the models. Here are the descriptions of each, organized similarly to how the GUI presents them:
 
-# Simulation Considerations
+## Settings
 
-## Forward Facing Attributes
+- `N_AGENTS`: The initial population size of the model
 
-- `speed`: How far a creature can travel in a single step. (Faster creatures get food faster but spend more
-energy)
-- `size`: How big a creature is. (Can eat creatures 20% smaller than it, but uses more energy)
-- `sense`: How far away a creature can detect food. (Can find food more efficiently, but costs energy).
+- `N_FOOD`: The amount of food available on each new `day`
 
-# Other
+- `N_DAYS`: How many `days` the model will run
 
-- `eat_distance`: How far away do creatures need to be in order to eat the food. Does the probability
-of a successful ‘eat’ increase as distance closes after a certain point?
-- `heading`: Which direction is a creature headed. (Depends on state)
-- `state`: A creatures goals / motivation?
-    - `wandering`: Walking around looking for food
-    - `chasing`: Detected food / smaller creature and is headed straight for it
-    - `fleeing`: Detected larger creature and is headed away
-    - `home`: Found food and is headed home
-    - `Combos`?: fleeing + home found food but also being chased?
+- `DAILY_STEPS`: How many `steps` are available in each `day`
 
-# Parameters
+## Environment
 
-- prob_mutation: Probability that a mutation will happen on reproduction
-- mutation_modifier: How much does each attribute change on mutation (speed, size,sense)
-- n_agent: How many creatures to start with
-- n_food: How much food appears each day?
-- days: How many days to run the simulation
-- steps: How many steps does each creature get per day?
-- food_value: How nutritious is food?
-- environment: How large is the environment?
+- `PREDATOR_RATIO`: The percent difference in `size` between `Agents` that dictates who is prey / predator. (e.g., `Agent` A is 20% larger than `Agent` B. `Agent` A is a predator to `Agent` B)
+
+- `FOOD_SIZE`: How big is the food. This impacts an Agents ability to `sense` the food.
+
+- `FOOD_VALUE`: How nutritious is the food.
+
+- `EAT_DIST`: How close an `Agent` has to be in order to eat the food / other `Agent`.
+
+- `HEIGHT`: The Y value of the environment grid
+
+- `WIDTH`: The X value of the environment grid
+
+- `HEADING_MOD`: When `wandering` how many degrees (+-) can an `Agents` `heading` change
+
+- `STEP_BUFFER`: How many steps Agents will allow themselves to begin heading home. If it will take X steps to get home, the agent will start heading home at X + STEP_BUFFER steps remaining.
+
+## Mutation
+
+- `MUTATION_RATE`: How likely is a mutation during reproduction
+
+- `REPRODUCTION_MOD`: What percentage of energy (relative to it's own) must a Agent eat in order to reproduce.  
+
+- `SPEED`: Speed of initial cohort of Agents (Distance traveled in 1 step)
+
+- `SIZE`: Size of initial cohort of Agents (Radius of body)
+
+- `SENSE`: Sense of initial cohort of Agents (Radius of detection)
+
+- `SPEED_MOD`: What percentage can speed increase/decrease on mutation
+
+- `SIZE_MOD`: What percentage can size increase/decrease on mutation
+
+- `SENSE_MOD`: What percentage can sense increase/decrease on mutation
+
+- `SPEED_ALLOW`: Allow speed mutations?
+
+- `SIZE_ALLOW`: Allow size mutations?
+
+- `SENSE_ALLOW`: Allow sense mutations?
+
+# Known Improvement Opportunities
+
+- Build out `defaults.json` with descriptions, categories, and widget type to ease programmatically building UI.
+
+- Incorporate descriptions in GUI
+
+- Incorporate `overlap` into method of `Pos`
+
+- Add subplots that show `speed`, `size`, `sense` development summaries
+
+- Have Agents and Food generate ID's in `__init__` using model (Not as passed param)
