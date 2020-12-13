@@ -6,6 +6,7 @@ from json import load, dumps
 from csv import writer
 import subprocess
 from imgurpython import ImgurClient
+import time
 
 WEBHOOK_URL = keyring.get_password("NSBOT", "webhook")
 IMG_CLIENT_ID = keyring.get_password("NSBOT", "imgur")
@@ -30,13 +31,13 @@ class Settings(tk.LabelFrame):
         self.n_food = tk.Scale(self, from_=1, to=200, orient=tk.HORIZONTAL)
         self.n_food.grid(row=1, column=1, sticky='w')
 
-        # N Food
+        # N Days
         lbl_n_days = tk.Label(self, text="# of Days")
         lbl_n_days.grid(row=0, column=2, sticky='w')
         self.n_days = tk.Scale(self, from_=1, to=100, orient=tk.HORIZONTAL)
         self.n_days.grid(row=1, column=2, sticky='w')
 
-        # N Food
+        # N Steps
         lbl_day_steps = tk.Label(self, text="# Steps per Day")
         lbl_day_steps.grid(row=0, column=3, sticky='w')
         self.day_steps = tk.Scale(self, from_=50, to=150, orient=tk.HORIZONTAL)
@@ -276,7 +277,11 @@ class Application(tk.Tk):
         '''Runs the Natural Selection Simulator'''
         self.get_params()
         self.model = Model(self.params)
+
+        # Run and Time the Model
+        start_time = time.time()
         self.model.run()
+        print(f"Model took {(time.time() - start_time)} seconds.")
 
         with open("pop.csv", 'w', newline='') as f:
             r = writer(f)

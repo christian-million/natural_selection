@@ -14,10 +14,12 @@ class Model:
         # Data Capture Attributes
         self.pop_sum = [['day', 'agents']]
         self.attr_sum = [['day', 'avg_speed', 'avg_size', 'avg_sense']]
+        self.agent_data = [['id', 'birthday', 'deathday', 'reproduced', 'food_eaten', 'agents_eaten']]
+        self.food_data = [['id', 'birthday', 'deathday']]
 
         # Initialize original cohort of agents
         for i in range(self.params["N_AGENTS"]):
-            self.agents.append(Agent(i, self, params['SPEED'], params['SIZE'], params['SENSE']))
+            self.agents.append(Agent(self, params['SPEED'], params['SIZE'], params['SENSE']))
 
         # Initialize original cohort of food
         self.restore_food()
@@ -34,7 +36,7 @@ class Model:
 
         # Add food up to N_FOOD amount
         for i in range(self.params["N_FOOD"] - remaining_food):
-            new_food = Food(str(self.current_day) + str(i), self)
+            new_food = Food(self)
             self.food.append(new_food)
 
     def step(self):
@@ -45,6 +47,12 @@ class Model:
 
     def day(self):
         '''Runs, resets, and captures the actions of each day'''
+        # Let any applicable agents reproduce
+        for agent in self.agents:
+            if agent.reproduce:
+                agent.birth()
+                agent.reproduce = False
+
         # Reset remaining steps each day
         self.remaining_steps = self.params["DAILY_STEPS"]
 
@@ -64,8 +72,8 @@ class Model:
 
         # Average Speed, but return 0 if no agents (i.e., all are dead)
         avg_speed = sum(speeds) / len(speeds) if len(speeds) else 0
-        avg_size = sum(size) / len(size) if len(speeds) else 0
-        avg_sense = sum(sense) / len(sense) if len(speeds) else 0
+        avg_size = sum(size) / len(size) if len(size) else 0
+        avg_sense = sum(sense) / len(sense) if len(sense) else 0
         self.attr_sum.append([self.current_day, avg_speed, avg_size, avg_sense])
 
         # Let agents move around and capture their movement
@@ -76,12 +84,6 @@ class Model:
         # After each agent has moved, let them reset
         for agent in self.agents:
             agent.end_day()
-
-        # Let any applicable agents reproduce
-        for agent in self.agents:
-            if agent.reproduce:
-                agent.birth()
-                agent.reproduce = False
 
         # Reorder the Agents to reduce repeated bias
         shuffle(self.agents)
@@ -94,3 +96,4 @@ class Model:
         for day in range(self.params["N_DAYS"]):
             self.day()
             self.current_day += 1
+

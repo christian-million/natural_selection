@@ -90,9 +90,10 @@ def overlap(pos1, r1, pos2, r2):
 
 class Food:
     '''Generic food that can be eaten by Agents'''
-    def __init__(self, id, model):
-        self.id = id
+    def __init__(self, model):
         self.model = model
+        self.birthday = self.model.current_day
+        self.id = str(self.birthday) + str(len(self.model.agents))
         self.pos = Pos(uniform(0, self.model.params["WIDTH"]), randint(0, self.model.params["HEIGHT"]))
         self.size = self.model.params["FOOD_SIZE"]
         self.value = self.model.params["FOOD_VALUE"]
@@ -101,13 +102,16 @@ class Food:
     def die(self):
         '''Sets alive attribute to False'''
         self.alive = False
+        self.model.food_data.append([self.id, self.birthday, self.model.current_day])
+        self.model.food.remove(self)
 
 
 class Agent:
     '''A being with a speed, size, sense, position, and heading'''
-    def __init__(self, id, model, speed, size, sense):
-        self.id = id
+    def __init__(self, model, speed, size, sense):
         self.model = model
+        self.birthday = self.model.current_day
+        self.id = str(self.birthday) + str(len(self.model.agents))
         self.pos = None
         self.heading = None
         self.speed = speed
@@ -159,6 +163,9 @@ class Agent:
     def die(self):
         '''Sets alive status to False'''
         self.alive = False
+        self.model.agent_data.append([self.id, self.birthday, self.model.current_day,
+                                      self.data['reproduced'], self.data['food_eaten'], self.data['agents_eaten']])
+        self.model.agents.remove(self)
 
     def closest_food(self):
         '''Returns the closest food / edible Agent'''
@@ -226,7 +233,7 @@ class Agent:
 
         state = "assessing"
 
-        if self.home:
+        if self.home or not self.alive:
             # Do nothing
             return
 
@@ -243,6 +250,7 @@ class Agent:
         # Get closest predator
         predators = self.predators()
 
+        # If headed home, bypass
         if state == 'sprint_home':
             state = 'home'
         elif predators:
@@ -369,7 +377,7 @@ class Agent:
                 sense *= 1 + (choice([-1, 1]) * self.model.params["SENSE_MOD"])
 
         # Right now, the offspring is technically born at a random location
-        offspring = Agent(len(self.model.agents), self.model, speed, size, sense)
+        offspring = Agent(self.model, speed, size, sense)
 
         self.model.agents.append(offspring)
 
