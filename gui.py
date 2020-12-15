@@ -240,7 +240,8 @@ class Application(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         with open('defaults.json') as f:
-            self.defaults = load(f)
+            defaults = load(f)
+            self.defaults = {key: value.get("value") for key, value in defaults.items()}
 
         self.params = self.defaults.copy()
 

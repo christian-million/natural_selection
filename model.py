@@ -14,7 +14,7 @@ class Model:
         # Data Capture Attributes
         self.pop_sum = [['day', 'agents']]
         self.attr_sum = [['day', 'avg_speed', 'avg_size', 'avg_sense']]
-        self.agent_data = [['id', 'birthday', 'deathday', 'reproduced', 'food_eaten', 'agents_eaten']]
+        self.agent_data = [['id', 'birthday', 'deathday', 'speed', 'size', 'sense', 'reproduced', 'food_eaten', 'agents_eaten']]
         self.food_data = [['id', 'birthday', 'deathday']]
 
         # Initialize original cohort of agents
@@ -97,3 +97,24 @@ class Model:
             self.day()
             self.current_day += 1
 
+        for agent in self.agents:
+            if agent.alive:
+                self.agent_data.append([agent.id, agent.birthday, -1,
+                                        agent.speed, agent.size, agent.sense,
+                                        agent.data['reproduced'], agent.data['food_eaten'], agent.data['agents_eaten']])
+
+
+if __name__ == '__main__':
+    import json
+    import csv
+    with open('defaults.json') as f:
+        p = json.load(f)
+        params = {key: value.get("value") for key, value in p.items()}
+
+    test_model = Model(params)
+
+    test_model.run()
+
+    with open('tst.csv', 'w', newline='') as f:
+        f_csv = csv.writer(f)
+        f_csv.writerows(test_model.agent_data)

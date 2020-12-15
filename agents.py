@@ -130,8 +130,8 @@ class Agent:
         '''Randomly chooses a place to live, provided it is away from other predators / prey'''
         h, w = self.model.params["HEIGHT"], self.model.params["WIDTH"]
 
-        unsafe = True
-        while unsafe:
+        safe = False
+        while not safe:
 
             side = choice(['t', 'r', 'b', 'l'])
             if side == 't':
@@ -147,14 +147,14 @@ class Agent:
                 x, y = 0, uniform(0, h)
                 heading = choice([uniform(0, 90), uniform(270, 360)])
 
-            unsafe = False
+            safe = True
             for agent in self.model.agents:
                 if agent.pos.distance(Pos(x, y)) < self.model.params["EAT_DIST"]:
                     if agent.size > self.size * (1 + self.model.params["PREDATOR_RATIO"]):
-                        unsafe = True
+                        safe = False
                         break
                     elif agent.size < self.size * (1-self.model.params["PREDATOR_RATIO"]):
-                        unsafe = True
+                        safe = False
                         break
 
             self.pos = Pos(x, y)
@@ -164,6 +164,7 @@ class Agent:
         '''Sets alive status to False'''
         self.alive = False
         self.model.agent_data.append([self.id, self.birthday, self.model.current_day,
+                                      self.speed, self.size, self.sense,
                                       self.data['reproduced'], self.data['food_eaten'], self.data['agents_eaten']])
         self.model.agents.remove(self)
 
@@ -212,7 +213,7 @@ class Agent:
     def eat(self, food):
         '''Takes another Agents / Foods energy and kills it.'''
         self.eaten += food.value
-        if type(food) == 'Agent':
+        if isinstance(food, Agent):
             self.data["agents_eaten"] += 1
         else:
             self.data["food_eaten"] += 1
@@ -369,12 +370,15 @@ class Agent:
         if mutate:
             if self.model.params["SPEED_ALLOW"]:
                 speed *= 1 + (choice([-1, 1]) * self.model.params["SPEED_MOD"])
+                speed = round(speed, 4)
 
             if self.model.params["SIZE_ALLOW"]:
                 size *= 1 + (choice([-1, 1]) * self.model.params["SIZE_MOD"])
+                size = round(size, 4)
 
             if self.model.params["SENSE_ALLOW"]:
                 sense *= 1 + (choice([-1, 1]) * self.model.params["SENSE_MOD"])
+                sense = round(sense, 4)
 
         # Right now, the offspring is technically born at a random location
         offspring = Agent(self.model, speed, size, sense)
@@ -382,3 +386,4 @@ class Agent:
         self.model.agents.append(offspring)
 
         self.data["reproduced"] += 1
+
